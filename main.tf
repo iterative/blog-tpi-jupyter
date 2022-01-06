@@ -11,13 +11,14 @@ provider "iterative" {}
 resource "iterative_task" "casper_jupyter" {
   name    = "casper_jupyter"
   cloud   = "aws"
-  machine = "t2.micro"
+  machine = "g4dn.xlarge"
+  image   = "user@*:x86_64:Deep Learning AMI GPU TensorFlow 2.7.0 (Ubuntu 20.04) 20211208"
 
   environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "" }
   directory   = "${path.root}/shared"
   script      = <<-END
     #!/bin/bash
-    pip install notebook tensorflow-cpu tensorboard
+    pip install notebook tensorflow tensorboard cuvec
 
     npm i ngrok
     if [[ -n "$NGROK_TOKEN" ]]; then npx ngrok authtoken "$NGROK_TOKEN"; fi
