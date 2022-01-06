@@ -1,0 +1,7 @@
+/.env
+/node_modules/
+/package.json
+/package-lock.json
+/shared/
+/.terraform*
+/terraform.tfstate
