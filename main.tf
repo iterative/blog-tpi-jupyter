@@ -1,13 +1,9 @@
 terraform {
   required_providers {
-    iterative = {
-      source = "iterative/iterative"
-    }
+    iterative = { source = "iterative/iterative" }
   }
 }
-
 provider "iterative" {}
-
 resource "iterative_task" "casper_jupyter" {
   name    = "casper_jupyter"
   cloud   = "aws"
@@ -18,19 +14,25 @@ resource "iterative_task" "casper_jupyter" {
   directory   = "${path.root}/shared"
   script      = <<-END
     #!/bin/bash
-    pip install notebook tensorflow tensorboard cuvec
+    set -e
+    pip3 install notebook tensorflow tensorboard cuvec
+    curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+    apt update -qq && apt install -yqq nodejs
 
+    tmpdir="$(mktemp -d)"
+    cp tunnel.js "$tmpdir"/
+    pushd "$tmpdir"
     npm i ngrok
     if [[ -n "$NGROK_TOKEN" ]]; then npx ngrok authtoken "$NGROK_TOKEN"; fi
-    npx ngrok version
-    rm -f shared/log.md
     node tunnel.js &
-    echo waiting for log.md
     while [[ ! -f log.md ]]; do sleep 1; done
+    cat log.md
+    popd
+    rm -rf "$tmpdir"
 
     env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN PASSWORD="$JUPYTER_PASSWORD" tensorboard --logdir . --host 0.0.0.0 --port 6006 &
 
-    JUPYTER_SHA="$(python -c "from IPython.lib import passwd; print(passwd('$JUPYTER_PASSWORD'), end='')")"
+    JUPYTER_SHA="$(python3 -c "from IPython.lib import passwd; print(passwd('$JUPYTER_PASSWORD'), end='')")"
     mkdir -p ~/.jupyter
     echo '{
       "NotebookApp": {

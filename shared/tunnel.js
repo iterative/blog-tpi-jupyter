@@ -6,5 +6,5 @@ const ngrok = require('ngrok');
   console.log(jupyter);
   const tensorboard = `[Tensorboard](${await ngrok.connect(6006)})`;
   console.log(tensorboard);
-  fs.writeFileSync("shared/log.md", `${jupyter} | ${tensorboard}`);
+  fs.writeFileSync("log.md", `${jupyter} | ${tensorboard}`);
 })();
