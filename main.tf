@@ -8,7 +8,7 @@ resource "iterative_task" "jupyter_server" {
   machine = "g4dn.xlarge"
   image   = "user@*:x86_64:Deep Learning AMI GPU TensorFlow 2.7.0 (Ubuntu 20.04) 20211208"
 
-  environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "" }
+  environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "", CUDACXX="/usr/local/cuda/bin/nvcc" }
   directory   = "${path.root}/shared"
   script      = <<-END
     #!/bin/bash
