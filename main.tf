@@ -1,5 +1,5 @@
 terraform {
-  required_providers { iterative = { source = "iterative/iterative" } }
+  required_providers { iterative = { source = "iterative/iterative", version = "< 0.9.8" } }
 }
 provider "iterative" {}
 resource "iterative_task" "jupyter_server" {
@@ -8,9 +8,9 @@ resource "iterative_task" "jupyter_server" {
   machine = "g4dn.xlarge"
   image   = "user@*:x86_64:Deep Learning AMI GPU TensorFlow 2.7.0 (Ubuntu 20.04) 20211208"
 
-  environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "", CUDACXX="/usr/local/cuda/bin/nvcc" }
+  environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "", CUDACXX = "/usr/local/cuda/bin/nvcc" }
   directory   = "${path.root}/shared"
-  script      = <<-END
+  script = <<-END
     #!/bin/bash
     set -euo pipefail
     pip3 install notebook tensorflow tensorboard cuvec
@@ -26,7 +26,7 @@ resource "iterative_task" "jupyter_server" {
     (async function() {
       const jupyter = await ngrok.connect(8888);
       const tensorboard = await ngrok.connect(6006);
-      fs.writeFileSync("log.md", \`Jupyter Notebook: \$${jupyter}\nTensorboard: \$${tensorboard}\n\`);
+      fs.writeFileSync("log.md", \`URL: Jupyter Notebook: \$${jupyter} Tensorboard: \$${tensorboard}\n\`);
     })();
     EOF
     ) &
