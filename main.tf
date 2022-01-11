@@ -26,7 +26,7 @@ resource "iterative_task" "jupyter_server" {
     (async function() {
       const jupyter = await ngrok.connect(8888);
       const tensorboard = await ngrok.connect(6006);
-      fs.writeFileSync("log.md", \`URL: Jupyter Notebook: \$${jupyter} Tensorboard: \$${tensorboard}\n\`);
+      fs.writeFileSync("log.md", \`URL: Jupyter Notebook: \$${jupyter} TensorBoard: \$${tensorboard}\n\`);
     })();
     EOF
     ) &

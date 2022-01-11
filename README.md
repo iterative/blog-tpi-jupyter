@@ -1,13 +1,15 @@
-# Terraform Provider Iterative + Jupyter + Tensorboard
+# Terraform Provider Iterative + Jupyter + TensorBoard
 
 Painlessly deploy an ML-ready Jupyter server and sync results with your favourite cloud compute provider.
 
-Command             |Description
-:-------------------|:----------
-`terraform init`    | Install
-`terrafrom apply`   | Create remote instance & upload "shared" working dir
-`terraform refresh && terraform show \| grep URL` |  Get Jupyter & Tensorboard URLs
-`terraform destroy` | Download "shared" dir and terminate remote instance
+```sh
+terraform init           # Install
+terrafrom apply          # Create remote instance & upload "shared" working dir
+terraform refresh && terraform show | grep URL # Get Jupyter & TensorBoard URLs
+terraform destroy        # Download "shared" dir and terminate remote instance
+```
+
+Note that it can take a couple of minutes after `apply` for the machine to be ready.
 
 ## Requirements
 
