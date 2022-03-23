@@ -1,5 +1,5 @@
 terraform {
-  required_providers { iterative = { source = "iterative/iterative", version = ">= 0.9.9" } }
+  required_providers { iterative = { source = "iterative/iterative", version = ">=0.10.0" } }
 }
 provider "iterative" {}
 resource "iterative_task" "jupyter_server" {
@@ -9,7 +9,10 @@ resource "iterative_task" "jupyter_server" {
   image   = "user@*:x86_64:Deep Learning AMI GPU TensorFlow 2.7.0 (Ubuntu 20.04) 20211208"
 
   environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "", CUDACXX = "/usr/local/cuda/bin/nvcc" }
-  workdir { input = "${path.root}/shared" }
+  storage {
+    workdir = "shared"
+    output  = "."
+  }
   script = <<-END
     #!/bin/bash
     set -euo pipefail
