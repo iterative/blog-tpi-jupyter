@@ -22,13 +22,13 @@ provider "iterative" {}
 # For a full list of options, see:
 # https://registry.terraform.io/providers/iterative/iterative/latest/docs/resources/task
 resource "iterative_task" "jupyter_server" {
-  spot      = 0            # auto-priced low-cost spot instance
-  timeout   = 60*60*24     # force shutdown after 24h
-  disk_size = 125          # GB
+  spot      = 0             # auto-priced low-cost spot instance
+  timeout   = 60*60*24      # force shutdown after 24h
+  disk_size = 125           # GB
 
   # cloud-specific config
-  cloud     = "aws"          # or any of: gcp, az, k8s
-  machine   = "g4dn.xlarge"  # NVIDIA Tesla T4 GPU, 4 CPUs & 125 GB NVMe SSD at ~$0.15/h
+  cloud     = "aws"         # or any of: gcp, az, k8s
+  machine   = "g4dn.xlarge" # NVIDIA Tesla T4 GPU, 4 CPUs & 125 GB NVMe SSD at ~$0.15/h
   image     = "user@*:x86_64:Deep Learning AMI GPU TensorFlow 2.7.0 (Ubuntu 20.04) 20211208"
 
   # blank means extract from local env vars
