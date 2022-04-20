@@ -5,17 +5,19 @@ Painlessly deploy an ML-ready Jupyter server and sync results with your favourit
 To get started, clone this repo, then in the repo directory run:
 
 ```sh
-terraform init --upgrade     # Setup local dependencies
-terrafrom apply              # Create cloud resources & upload "shared" workdir
+terraform init    # Setup local dependencies
+terrafrom apply   # Create cloud resources & upload "shared" workdir
 terraform refresh | grep URL # Get Jupyter & TensorBoard URLs
 # ...
 # Have fun!
 # (optional) Click "Quit" in Jupyter to shutdown the cloud machine
 # ...
-terraform destroy            # Download "shared" & terminate cloud resources
+terraform destroy # Download "shared" workdir & terminate cloud resources
 ```
 
-Note that it can take a couple of minutes after `apply` for the machine to be ready.
+🛈 Note that it can take a couple of minutes after `apply` for the machine to be ready.
+
+🛈 Note that [Terraform Provider Iterative (TPI)](https://tpi.cml.dev) will automatically restart interrupted spot/preemptible instances (including restoring Jupyter's working directory). In such cases, run `terraform refresh` again to obtain the new Jupyter & TensorBoard URLs.
 
 ## Requirements
 

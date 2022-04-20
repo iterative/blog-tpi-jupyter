@@ -9,11 +9,11 @@
 #   - any choice of password (JUPYTER_PASSWORD)
 #
 # Usage:
-# 1. terraform init --upgrade     # Setup local dependencies
-# 2. terrafrom apply              # Create cloud resources & upload "shared" workdir
+# 1. terraform init    # Setup local dependencies
+# 2. terrafrom apply   # Create cloud resources & upload "shared" workdir
 # 3. terraform refresh | grep URL # Get Jupyter & TensorBoard URLs
 # 4. (optional) click "Quit" in Jupyter to shutdown the cloud machine
-# 5. terraform destroy            # Download "shared" & terminate cloud resources
+# 5. terraform destroy # Download "shared" workdir & terminate cloud resources
 terraform {
   required_providers { iterative = { source = "iterative/iterative" } }
 }
@@ -49,7 +49,7 @@ resource "iterative_task" "jupyter_server" {
     pushd "$(mktemp -d --suffix ngrok-tunnel)"
     npm i ngrok
     npx ngrok authtoken "$NGROK_TOKEN"
-    (node <<-EOF
+    (node <<EOF
     const fs = require('fs');
     const ngrok = require('ngrok');
     (async function() {
@@ -59,7 +59,7 @@ resource "iterative_task" "jupyter_server" {
     })();
     EOF
     ) &
-    while [[ ! -f log.md ]]; do sleep 1; done
+    while test ! -f log.md; do sleep 1; done
     cat log.md
     popd
 
@@ -67,13 +67,12 @@ resource "iterative_task" "jupyter_server" {
     env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN PASSWORD="$JUPYTER_PASSWORD" tensorboard --logdir . --host 0.0.0.0 --port 6006 &
 
     # start Jupyter server in foreground
-    mkdir -p ~/.jupyter
+    mkdir ~/.jupyter
     echo '{
       "NotebookApp": {
         "allow_root": true, "ip": "0.0.0.0", "open_browser": false,
         "password": "'$(python3 -c "from IPython.lib import passwd; print(passwd('$JUPYTER_PASSWORD'), end='')")'",
-        "password_required": true, "port": 8888, "port_retries": 0,
-        "shutdown_no_activity_timeout": 86400
+        "password_required": true, "port": 8888, "port_retries": 0
       }
     }' > ~/.jupyter/jupyter_notebook_config.json
     env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter notebook
