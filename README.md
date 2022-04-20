@@ -3,10 +3,14 @@
 Painlessly deploy an ML-ready Jupyter server and sync results with your favourite cloud compute provider.
 
 ```sh
-terraform init           # Install
-terrafrom apply          # Create remote instance & upload "shared" working dir
-terraform refresh && terraform show | grep URL # Get Jupyter & TensorBoard URLs
-terraform destroy        # Download "shared" dir and terminate remote instance
+terraform init --upgrade     # Setup local dependencies
+terrafrom apply              # Create cloud resources & upload "shared" workdir
+terraform refresh | grep URL # Get Jupyter & TensorBoard URLs
+# ...
+# Have fun!
+# (optional) Click "Quit" in Jupyter to shutdown the cloud machine
+# ...
+terraform destroy            # Download "shared" & terminate cloud resources
 ```
 
 Note that it can take a couple of minutes after `apply` for the machine to be ready.
@@ -21,7 +25,7 @@ Note that it can take a couple of minutes after `apply` for the machine to be re
   + `AWS_ACCESS_KEY_ID`
   + `AWS_SECRET_ACCESS_KEY`
 
-[AWS]: https://registry.terraform.io/providers/iterative/iterative/latest/docs#amazon-web-services
-[Azure]: https://registry.terraform.io/providers/iterative/iterative/latest/docs#microsoft-azure
-[GCP]: https://registry.terraform.io/providers/iterative/iterative/latest/docs#google-cloud-platform
-[Kubernetes]: https://registry.terraform.io/providers/iterative/iterative/latest/docs#kubernetes
+[AWS]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#amazon-web-services
+[Azure]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#microsoft-azure
+[GCP]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#google-cloud-platform
+[Kubernetes]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#kubernetes

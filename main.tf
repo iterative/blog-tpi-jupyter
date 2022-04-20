@@ -9,13 +9,11 @@
 #   - any choice of password (JUPYTER_PASSWORD)
 #
 # Usage:
-# 0. `terraform init --upgrade` to setup deps
-# 1. `terraform apply` to create cloud resources & upload `./shared/` workdir
-# 2. `terraform refresh`
-# 3. click on the URL printed on the console to open Jupyter
-#    (wait a minute and repeat step 2 if there's no URL)
+# 1. terraform init --upgrade     # Setup local dependencies
+# 2. terrafrom apply              # Create cloud resources & upload "shared" workdir
+# 3. terraform refresh | grep URL # Get Jupyter & TensorBoard URLs
 # 4. (optional) click "Quit" in Jupyter to shutdown the cloud machine
-# 5. `terraform destroy` to download the `./shared/` workdir & terminate cloud resources
+# 5. terraform destroy            # Download "shared" & terminate cloud resources
 terraform {
   required_providers { iterative = { source = "iterative/iterative" } }
 }
@@ -57,7 +55,7 @@ resource "iterative_task" "jupyter_server" {
     (async function() {
       const jupyter = await ngrok.connect(8888);
       const tensorboard = await ngrok.connect(6006);
-      fs.writeFileSync("log.md", \`URL: Jupyter Notebook: \$${jupyter} TensorBoard: \$${tensorboard}\n\`);
+      fs.writeFileSync("log.md", \`\n====\nURL: Jupyter Notebook: \$${jupyter}\n====\nURL: TensorBoard: \$${tensorboard}\n====\n\`);
     })();
     EOF
     ) &
