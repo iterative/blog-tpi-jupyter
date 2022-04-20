@@ -29,3 +29,16 @@ Note that it can take a couple of minutes after `apply` for the machine to be re
 [Azure]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#microsoft-azure
 [GCP]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#google-cloud-platform
 [Kubernetes]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#kubernetes
+
+## Alternatives
+
+Some that we are aware of: (Anything missing? Please do open a PR!)
+
+- [Google Colab](https://colab.research.google.com/): based on (but not identical to) Jupyter, has [resource limits](https://research.google.com/colaboratory/faq.html#resource-limits) and limited config options (CPU, GPU, RAM, memory, timeouts)
+- [Binder](https://mybinder.org/): no GPU, no config options, for-profit use disallowed, has [user guidelines](https://mybinder.readthedocs.io/en/latest/about/user-guidelines.html)
+
+However there are a few distinct advantages to using `terraform` over the alternatives:
+
+- **Lower cost**: use your favourite cloud provider's existing pricing, including on-demand per-second billing and bulk discounts
+- **Auto-recovery**: auto-backup `workdir` & auto-recover terminated `spot` instances
+- **Custom spec**: full control over hardware & software requirements via `main.tf` (including machine [types](https://registry.terraform.io/providers/iterative/iterative/latest/docs/resources/task#machine-type) (CPU, GPU, RAM, storage) & [images](https://registry.terraform.io/providers/iterative/iterative/latest/docs/resources/task#machine-image))
