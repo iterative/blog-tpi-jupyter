@@ -5,6 +5,7 @@ Painlessly deploy an ML-ready Jupyter server and sync results with your favourit
 To get started, clone this repo, then in the repo directory run:
 
 ```sh
+export TF_LOG_PROVIDER=INFO  # (optional) Control verbosity
 terraform init    # Setup local dependencies
 terrafrom apply   # Create cloud resources & upload "shared" workdir
 terraform refresh | grep URL # Get Jupyter & TensorBoard URLs
