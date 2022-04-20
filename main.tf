@@ -41,7 +41,7 @@ resource "iterative_task" "jupyter_server" {
     #!/bin/bash
     set -euo pipefail
     # install deps
-    pip3 install notebook tensorflow tensorboard
+    pip3 install notebook tensorflow tensorboard matplotlib tensorflow_datasets ipywidgets
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
     apt install -yqq nodejs
 
