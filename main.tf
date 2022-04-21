@@ -45,7 +45,7 @@ resource "iterative_task" "jupyter_server" {
     sed -ri 's#^(APT::Periodic::Unattended-Upgrade).*#\1 "0";#' /etc/apt/apt.conf.d/20auto-upgrades
     dpkg-reconfigure unattended-upgrades
     # install dependencies
-    pip3 install -q notebook matplotlib ipywidgets tensorflow==2.8.0 tensorboard tensorflow_datasets
+    pip3 install notebook matplotlib ipywidgets tensorflow==2.8.0 tensorboard tensorflow_datasets
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
     apt-get install -yq nodejs
 
