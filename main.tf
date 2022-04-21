@@ -76,7 +76,12 @@ resource "iterative_task" "jupyter_server" {
     echo '{
       "NotebookApp": {
         "allow_root": true, "ip": "0.0.0.0", "open_browser": false,
-        "password": "'$(python3 -c "from IPython.lib import passwd; print(passwd('$JUPYTER_PASSWORD'), end='')")'",
+        "password": "'$(python3 -c "import os
+    try:
+        from notebook.auth import passwd
+    except ImportError:
+        from IPython.lib import passwd
+    print(passwd(os.environ['JUPYTER_PASSWORD']), end='')")'",
         "password_required": true, "port": 8888, "port_retries": 0
       }
     }' > ~/.jupyter/jupyter_notebook_config.json
