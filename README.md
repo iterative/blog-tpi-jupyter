@@ -19,7 +19,7 @@ terraform destroy # Download "shared" workdir & terminate cloud resources
 
 🛈 Note that it can take a couple of minutes after `apply` for the machine to be ready.
 
-🛈 Note that [Terraform Provider Iterative (TPI)](https://tpi.cml.dev) will automatically restart interrupted spot/preemptible instances (including restoring Jupyter's working directory). In such cases, run `terraform refresh` again to obtain the new Jupyter & TensorBoard URLs.
+🛈 Note that [Terraform Provider Iterative (TPI)](https://github.com/iterative/terraform-provider-iterative) will automatically restart interrupted spot/preemptible instances (including restoring Jupyter's working directory). In such cases, run `terraform refresh` again to obtain the new Jupyter & TensorBoard URLs.
 
 ## Requirements
 
