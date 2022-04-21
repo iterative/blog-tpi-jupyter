@@ -33,7 +33,7 @@ resource "iterative_task" "jupyter_server" {
   image     = "user@*:x86_64:Deep Learning AMI GPU TensorFlow 2.7.0 (Ubuntu 20.04) 20211208"
 
   # blank means extract from local env vars
-  environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "", CUDACXX = "/usr/local/cuda/bin/nvcc" }
+  environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "" }
   storage {
     workdir = "shared"
     output  = "."
@@ -41,13 +41,14 @@ resource "iterative_task" "jupyter_server" {
   script = <<-END
     #!/bin/bash
     set -euo pipefail
-    # install deps
-    pip3 install notebook tensorflow tensorboard matplotlib tensorflow_datasets ipywidgets
+    export CUDACXX=/usr/local/cuda/bin/nvcc
+    # install dependencies
+    pip3 install -q notebook matplotlib ipywidgets 'tensorflow>=2.7,<3' tensorboard tensorflow_datasets
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-    apt install -yqq nodejs
+    apt-get install -yq nodejs
 
     # start tunnel
-    pushd "$(mktemp -d --suffix ngrok-tunnel)"
+    pushd "$(mktemp -d --suffix dependencies)"
     npm i ngrok
     npx ngrok authtoken "$NGROK_TOKEN"
     (node <<EOF
@@ -62,7 +63,7 @@ resource "iterative_task" "jupyter_server" {
     ) &
     while test ! -f log.md; do sleep 1; done
     cat log.md
-    popd
+    popd # dependencies
 
     # start tensorboard in background
     env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN PASSWORD="$JUPYTER_PASSWORD" tensorboard --logdir . --host 0.0.0.0 --port 6006 &
