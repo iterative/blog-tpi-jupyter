@@ -60,7 +60,8 @@ resource "iterative_task" "jupyter_server" {
     (async function() {
       const jupyter = await ngrok.connect(8888);
       const tensorboard = await ngrok.connect(6006);
-      fs.writeFileSync("log.md", \`\n*=*=*=*=*\nURL: Jupyter Notebook: \$${jupyter}/?token=$${JUPYTER_TOKEN}\n*=*=*=*=*\nURL: TensorBoard: \$${tensorboard}\n*=*=*=*=*\n\`);
+      const br = '\n*=*=*=*=*=*=*=*=*=*=*=*=*\n';
+      fs.writeFileSync("log.md", \`\$${br}URL: Jupyter Lab: \$${jupyter}/lab?token=$${JUPYTER_TOKEN}\$${br}URL: Jupyter Notebook: \$${jupyter}/tree?token=$${JUPYTER_TOKEN}\$${br}URL: TensorBoard: \$${tensorboard}\$${br}\`);
     })();
     EOF
     ) &
@@ -74,12 +75,12 @@ resource "iterative_task" "jupyter_server" {
     # start Jupyter server in foreground
     mkdir ~/.jupyter
     echo '{
-      "NotebookApp": {
+      "ServerApp": {
         "allow_root": true, "ip": "0.0.0.0", "open_browser": false,
         "port": 8888, "port_retries": 0, "token": "'$JUPYTER_TOKEN'"
       }
     }' > ~/.jupyter/jupyter_notebook_config.json
-    env -u JUPYTER_TOKEN -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter notebook
+    env -u JUPYTER_TOKEN -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter lab
   END
 }
 output "logs" {
