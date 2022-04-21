@@ -5,6 +5,7 @@ Painlessly deploy an ML-ready Jupyter server and sync results with your favourit
 To get started, clone this repo, then in the repo directory run:
 
 ```sh
+export NGROK_TOKEN="..."     # Sign up for free at https://ngrok.com
 export TF_LOG_PROVIDER=INFO  # (optional) Control verbosity
 terraform init    # Setup local dependencies
 terrafrom apply   # Create cloud resources & upload "shared" workdir
@@ -22,9 +23,8 @@ terraform destroy # Download "shared" workdir & terminate cloud resources
 
 ## Requirements
 
-[`terraform`](https://www.terraform.io/downloads.html) plus some environment variables:
-
-- `NGROK_TOKEN`: sign up for free at https://ngrok.com
+- Download [`terraform`](https://www.terraform.io/downloads.html) (free)
+- [ngrok](https://ngrok.com) credentials (free)
 - Cloud credentials ([AWS], [Azure], [GCP], or [Kubernetes]). For example:
   + `AWS_ACCESS_KEY_ID`
   + `AWS_SECRET_ACCESS_KEY`
