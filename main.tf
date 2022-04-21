@@ -42,6 +42,9 @@ resource "iterative_task" "jupyter_server" {
     #!/bin/bash
     set -euo pipefail
     export CUDACXX=/usr/local/cuda/bin/nvcc
+    export DEBIAN_FRONTEND=noninteractive
+    sed -ri 's#^(APT::Periodic::Unattended-Upgrade).*#\1 "0";#' /etc/apt/apt.conf.d/20auto-upgrades
+    dpkg-reconfigure unattended-upgrades
     # install dependencies
     pip3 install -q notebook matplotlib ipywidgets tensorflow==2.8.0 tensorboard tensorflow_datasets
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
