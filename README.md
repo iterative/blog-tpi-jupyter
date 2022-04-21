@@ -1,6 +1,6 @@
 # Terraform Provider Iterative + Jupyter + TensorBoard
 
-Painlessly deploy an ML-ready Jupyter server and sync results with your favourite cloud compute provider.
+Painlessly deploy an ML-ready Jupyter server and sync results with your preferred cloud compute provider.
 
 To get started, clone this repo, then in the repo directory run:
 
@@ -43,6 +43,6 @@ Some that we are aware of: (Anything missing? Please do open a PR!)
 
 However there are a few distinct advantages to using `terraform` over the alternatives:
 
-- **Lower cost**: use your favourite cloud provider's existing pricing, including on-demand per-second billing and bulk discounts
+- **Lower cost**: use your preferred cloud provider's existing pricing, including on-demand per-second billing and bulk discounts
 - **Auto-recovery**: auto-backup `workdir` & auto-recover terminated `spot` instances
 - **Custom spec**: full control over hardware & software requirements via `main.tf` -- including machine [types](https://registry.terraform.io/providers/iterative/iterative/latest/docs/resources/task#machine-type) (CPU, GPU, RAM, storage) & [images](https://registry.terraform.io/providers/iterative/iterative/latest/docs/resources/task#machine-image)
