@@ -25,6 +25,7 @@ resource "iterative_task" "jupyter_server" {
   spot      = 0             # auto-priced low-cost spot instance
   timeout   = 60*60*24      # force shutdown after 24h
   disk_size = 125           # GB
+  region    = "us-east"
 
   # cloud-specific config
   cloud     = "aws"         # or any of: gcp, az, k8s
