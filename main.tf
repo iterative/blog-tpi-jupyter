@@ -31,7 +31,7 @@ resource "iterative_task" "jupyter_server" {
   cloud     = "aws"         # see `git checkout generic` branch for: gcp, az, k8s
 
   # blank means extract from local env vars
-  environment = { NGROK_TOKEN = "", TF_CPP_MIN_LOG_LEVEL = "1", QUIET = "1" }
+  environment = { NGROK_TOKEN = "", TF_CPP_MIN_LOG_LEVEL = "1", QUIET = "1", GITHUB_USER = "" }
   storage {
     workdir = "shared"
     output  = "."
@@ -39,6 +39,12 @@ resource "iterative_task" "jupyter_server" {
   script = <<-END
     #!/bin/bash
     set -euo pipefail
+    if test -n "$GITHUB_USER"; then
+      # SSH debugging
+      trap 'echo script error: waiting for debugging over SSH. Run \"terraform destroy\" to stop waiting; sleep inf' ERR
+      mkdir -p "$HOME/.ssh"
+      curl -fsSL "https://github.com/$GITHUB_USER.keys" >> "$HOME/.ssh/authorized_keys"
+    fi
     export CUDACXX=/usr/local/cuda/bin/nvcc
     export DEBIAN_FRONTEND=noninteractive
     sed -ri 's#^(APT::Periodic::Unattended-Upgrade).*#\1 "0";#' /etc/apt/apt.conf.d/20auto-upgrades
