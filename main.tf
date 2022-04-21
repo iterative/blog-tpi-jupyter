@@ -45,42 +45,57 @@ resource "iterative_task" "jupyter_server" {
       mkdir -p "$HOME/.ssh"
       curl -fsSL "https://github.com/$GITHUB_USER.keys" >> "$HOME/.ssh/authorized_keys"
     fi
-    export CUDACXX=/usr/local/cuda/bin/nvcc
-    export DEBIAN_FRONTEND=noninteractive
-    sed -ri 's#^(APT::Periodic::Unattended-Upgrade).*#\1 "0";#' /etc/apt/apt.conf.d/20auto-upgrades
-    dpkg-reconfigure unattended-upgrades
-    # install dependencies
-    pushd "$(mktemp -d --suffix dependencies)"
-    curl -fsSLO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda3-latest-Linux-x86_64.sh -b -p /usr/local/miniconda3 >> /dev/null
-    source /usr/local/miniconda3/bin/activate
-    conda install -c conda-forge -y $${QUIET:+-q} 'nodejs<17' jupyterlab notebook matplotlib ipywidgets 'tensorflow<3' tensorboard
-    pip install -q $${QUIET:+-q} tensorflow_datasets
 
-    # start tunnel
-    export JUPYTER_TOKEN="$(uuidgen)"
-    npm i ngrok
-    npx ngrok authtoken "$NGROK_TOKEN"
-    (node <<TUNNEL
+    # create dependency files
+    pushd "$(mktemp -d --suffix dependencies)"
+
+    curl -fsSLO https://deb.nodesource.com/setup_16.x >>/dev/null
+
+    (cat <<TUNNEL
     const fs = require('fs');
     const ngrok = require('ngrok');
+    const { JUPYTER_TOKEN } = process.env;
     (async function() {
       const jupyter = await ngrok.connect(8888);
       const tensorboard = await ngrok.connect(6006);
       const br = '\n*=*=*=*=*=*=*=*=*=*=*=*=*\n';
-      fs.writeFileSync("log.md", \`\$${br}URL: Jupyter Lab: \$${jupyter}/lab?token=$${JUPYTER_TOKEN}\$${br}URL: Jupyter Notebook: \$${jupyter}/tree?token=$${JUPYTER_TOKEN}\$${br}URL: TensorBoard: \$${tensorboard}\$${br}\`);
+      fs.writeFileSync("log.md", \`\$${br}URL: Jupyter Lab: \$${jupyter}/lab?token=\$${JUPYTER_TOKEN}\$${br}URL: Jupyter Notebook: \$${jupyter}/tree?token=\$${JUPYTER_TOKEN}\$${br}URL: TensorBoard: \$${tensorboard}\$${br}\`);
     })();
     TUNNEL
-    ) &
+    ) >tunnel.js
+
+    (cat <<CMD
+    #!/bin/bash
+    set -euo pipefail
+    # start tunnel in background
+    npx ngrok authtoken "$NGROK_TOKEN"
+    node ./tunnel.js &
     while test ! -f log.md; do sleep 1; done
     cat log.md
-    popd # dependencies
-
     # start tensorboard in background
-    env -u JUPYTER_TOKEN -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN tensorboard --logdir . --host 0.0.0.0 --port 6006 &
-
+    tensorboard --logdir . --host 0.0.0.0 --port 6006 &
     # start Jupyter server in foreground
-    env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter lab --allow-root --ip=0.0.0.0 --no-browser --port=8888 --port-retries=0
+    jupyter lab --allow-root --ip=0.0.0.0 --notebook-dir=/server --no-browser --port=8888 --port-retries=0
+    CMD
+    ) >cmd.sh
+
+    (cat <<DOCKERFILE
+    FROM tensorflow/tensorflow:latest-gpu-jupyter
+    ARG QUIET=1
+    RUN python3 -m pip install --no-cache-dir $${QUIET:+-q} jupyterlab matplotlib ipywidgets tensorboard tensorflow_datasets
+    COPY setup_16.x tunnel.js cmd.sh ./
+    RUN bash setup_16.x >> /dev/null && apt-get install -y $${QUIET:+-qq} nodejs && rm setup_16.x && npm i ngrok
+    RUN chmod +x cmd.sh
+    CMD ["./cmd.sh"]
+    DOCKERFILE
+    ) >Dockerfile
+
+    # build docker image
+    docker pull $${QUIET:+-q} tensorflow/tensorflow:latest-gpu-jupyter
+    docker build -t img --build-arg QUIET="$QUIET" .
+
+    popd # dependencies
+    docker run --gpus all --rm -i -e NGROK_TOKEN -e JUPYTER_TOKEN="$(uuidgen)" -p 6006:6006 -p 8888:8888 -v "$PWD:/server" img
   END
 }
 output "urls" {
