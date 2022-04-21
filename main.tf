@@ -30,7 +30,7 @@ resource "iterative_task" "jupyter_server" {
   # cloud-specific config
   cloud     = "aws"         # or any of: gcp, az, k8s
   machine   = "g4dn.xlarge" # NVIDIA Tesla T4 GPU, 4 CPUs & 125 GB NVMe SSD at ~$0.15/h
-  image     = "user@*:x86_64:Deep Learning AMI GPU TensorFlow 2.7.0 (Ubuntu 20.04) 20211208"
+  image     = "user@898082745236:x86_64:Deep Learning AMI GPU TensorFlow 2.8.0 (Ubuntu 20.04) 20220315"
 
   # blank means extract from local env vars
   environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "" }
@@ -43,7 +43,7 @@ resource "iterative_task" "jupyter_server" {
     set -euo pipefail
     export CUDACXX=/usr/local/cuda/bin/nvcc
     # install dependencies
-    pip3 install -q notebook matplotlib ipywidgets 'tensorflow>=2.7,<3' tensorboard tensorflow_datasets
+    pip3 install -q notebook matplotlib ipywidgets tensorflow==2.8.0 tensorboard tensorflow_datasets
     curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
     apt-get install -yq nodejs
 
