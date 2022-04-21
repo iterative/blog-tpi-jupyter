@@ -6,7 +6,6 @@
 # 2. some env vars
 #   - cloud account (https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication)
 #   - https://ngrok.com token (NGROK_TOKEN)
-#   - any choice of password (JUPYTER_PASSWORD)
 #
 # Usage:
 # 1. terraform init    # Setup local dependencies
@@ -33,7 +32,7 @@ resource "iterative_task" "jupyter_server" {
   image     = "user@898082745236:x86_64:Deep Learning AMI GPU TensorFlow 2.8.0 (Ubuntu 20.04) 20220315"
 
   # blank means extract from local env vars
-  environment = { NGROK_TOKEN = "", JUPYTER_PASSWORD = "" }
+  environment = { NGROK_TOKEN = "" }
   storage {
     workdir = "shared"
     output  = "."
@@ -51,6 +50,7 @@ resource "iterative_task" "jupyter_server" {
     apt-get install -yq nodejs
 
     # start tunnel
+    export JUPYTER_TOKEN="$(uuidgen)"
     pushd "$(mktemp -d --suffix dependencies)"
     npm i ngrok
     npx ngrok authtoken "$NGROK_TOKEN"
@@ -60,7 +60,7 @@ resource "iterative_task" "jupyter_server" {
     (async function() {
       const jupyter = await ngrok.connect(8888);
       const tensorboard = await ngrok.connect(6006);
-      fs.writeFileSync("log.md", \`\n====\nURL: Jupyter Notebook: \$${jupyter}\n====\nURL: TensorBoard: \$${tensorboard}\n====\n\`);
+      fs.writeFileSync("log.md", \`\n====\nURL: Jupyter Notebook: \$${jupyter}/?token=$${JUPYTER_TOKEN}\n====\nURL: TensorBoard: \$${tensorboard}\n====\n\`);
     })();
     EOF
     ) &
@@ -69,23 +69,17 @@ resource "iterative_task" "jupyter_server" {
     popd # dependencies
 
     # start tensorboard in background
-    env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN PASSWORD="$JUPYTER_PASSWORD" tensorboard --logdir . --host 0.0.0.0 --port 6006 &
+    env -u JUPYTER_TOKEN -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN tensorboard --logdir . --host 0.0.0.0 --port 6006 &
 
     # start Jupyter server in foreground
     mkdir ~/.jupyter
     echo '{
       "NotebookApp": {
         "allow_root": true, "ip": "0.0.0.0", "open_browser": false,
-        "password": "'$(python3 -c "import os
-    try:
-        from notebook.auth import passwd
-    except ImportError:
-        from IPython.lib import passwd
-    print(passwd(os.environ['JUPYTER_PASSWORD']), end='')")'",
-        "password_required": true, "port": 8888, "port_retries": 0
+        "port": 8888, "port_retries": 0, "token": "'$JUPYTER_TOKEN'"
       }
     }' > ~/.jupyter/jupyter_notebook_config.json
-    env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter notebook
+    env -u JUPYTER_TOKEN -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter notebook
   END
 }
 output "logs" {

@@ -25,7 +25,6 @@ terraform destroy # Download "shared" workdir & terminate cloud resources
 [`terraform`](https://www.terraform.io/downloads.html) plus some environment variables:
 
 - `NGROK_TOKEN`: sign up for free at https://ngrok.com
-- `JUPYTER_PASSWORD`: whatever you wish
 - Cloud credentials ([AWS], [Azure], [GCP], or [Kubernetes]). For example:
   + `AWS_ACCESS_KEY_ID`
   + `AWS_SECRET_ACCESS_KEY`
