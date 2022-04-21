@@ -32,7 +32,7 @@ resource "iterative_task" "jupyter_server" {
   image     = "user@898082745236:x86_64:Deep Learning AMI GPU TensorFlow 2.8.0 (Ubuntu 20.04) 20220315"
 
   # blank means extract from local env vars
-  environment = { NGROK_TOKEN = "" }
+  environment = { NGROK_TOKEN = "", QUIET = "1" }
   storage {
     workdir = "shared"
     output  = "."
@@ -45,9 +45,9 @@ resource "iterative_task" "jupyter_server" {
     sed -ri 's#^(APT::Periodic::Unattended-Upgrade).*#\1 "0";#' /etc/apt/apt.conf.d/20auto-upgrades
     dpkg-reconfigure unattended-upgrades
     # install dependencies
-    pip3 install notebook matplotlib ipywidgets tensorflow==2.8.0 tensorboard tensorflow_datasets
-    curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
-    apt-get install -yq nodejs
+    pip3 install $${QUIET:+-q} notebook matplotlib ipywidgets tensorflow==2.8.0 tensorboard tensorflow_datasets
+    (curl -fsSL https://deb.nodesource.com/setup_16.x | bash -) >> /dev/null
+    apt-get install -y $${QUIET:+-qq} nodejs
 
     # start tunnel
     export JUPYTER_TOKEN="$(uuidgen)"
@@ -60,7 +60,7 @@ resource "iterative_task" "jupyter_server" {
     (async function() {
       const jupyter = await ngrok.connect(8888);
       const tensorboard = await ngrok.connect(6006);
-      fs.writeFileSync("log.md", \`\n====\nURL: Jupyter Notebook: \$${jupyter}/?token=$${JUPYTER_TOKEN}\n====\nURL: TensorBoard: \$${tensorboard}\n====\n\`);
+      fs.writeFileSync("log.md", \`\n*=*=*=*=*\nURL: Jupyter Notebook: \$${jupyter}/?token=$${JUPYTER_TOKEN}\n*=*=*=*=*\nURL: TensorBoard: \$${tensorboard}\n*=*=*=*=*\n\`);
     })();
     EOF
     ) &
