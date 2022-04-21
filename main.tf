@@ -24,11 +24,11 @@ resource "iterative_task" "jupyter_server" {
   spot      = 0             # auto-priced low-cost spot instance
   timeout   = 24*60*60      # force shutdown after 24h
   disk_size = 125           # GB
-  machine   = "m+t4"        # m/l/xl (CPU), +k80/t4/v100 (GPU)
+  machine   = "m+k80"       # m or l (CPU), +k80 or +v100 (GPU)
   image     = "nvidia"      # or "ubuntu"
 
   # cloud-specific config
-  cloud     = "aws"         # see `git checkout generic` branch for: gcp, az, k8s
+  cloud     = "aws"         # or any of: gcp, az, k8s
 
   # blank means extract from local env vars
   environment = { NGROK_TOKEN = "", TF_CPP_MIN_LOG_LEVEL = "1", QUIET = "1", GITHUB_USER = "username" }
@@ -50,13 +50,15 @@ resource "iterative_task" "jupyter_server" {
     sed -ri 's#^(APT::Periodic::Unattended-Upgrade).*#\1 "0";#' /etc/apt/apt.conf.d/20auto-upgrades
     dpkg-reconfigure unattended-upgrades
     # install dependencies
-    pip3 install $${QUIET:+-q} jupyterlab notebook matplotlib ipywidgets tensorflow==2.8.0 tensorboard tensorflow_datasets
-    (curl -fsSL https://deb.nodesource.com/setup_16.x | bash -) >/dev/null
-    apt-get install -y $${QUIET:+-qq} nodejs
+    pushd "$(mktemp -d --suffix dependencies)"
+    curl -fsSLO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b -p /usr/local/miniconda3 >> /dev/null
+    source /usr/local/miniconda3/bin/activate
+    conda install -c conda-forge -y $${QUIET:+-q} 'nodejs<17' jupyterlab notebook matplotlib ipywidgets 'tensorflow<3' tensorboard
+    pip install -q $${QUIET:+-q} tensorflow_datasets
 
     # start tunnel
     export JUPYTER_TOKEN="$(uuidgen)"
-    pushd "$(mktemp -d --suffix dependencies)"
     npm i ngrok
     npx ngrok authtoken "$NGROK_TOKEN"
     (node <<TUNNEL
