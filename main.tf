@@ -49,9 +49,12 @@ resource "iterative_task" "jupyter_server" {
     # create dependency files
     pushd "$(mktemp -d --suffix dependencies)"
 
-    curl -fsSLO https://deb.nodesource.com/setup_16.x >>/dev/null
-
-    (cat <<TUNNEL
+    (cat <<CMD
+    #!/bin/bash
+    set -euo pipefail
+    # start tunnel in background
+    npx ngrok authtoken "\$NGROK_TOKEN"
+    (node <<TUNNEL
     const fs = require('fs');
     const ngrok = require('ngrok');
     const { JUPYTER_TOKEN } = process.env;
@@ -59,17 +62,10 @@ resource "iterative_task" "jupyter_server" {
       const jupyter = await ngrok.connect(8888);
       const tensorboard = await ngrok.connect(6006);
       const br = '\n*=*=*=*=*=*=*=*=*=*=*=*=*\n';
-      fs.writeFileSync("log.md", \`\$${br}URL: Jupyter Lab: \$${jupyter}/lab?token=\$${JUPYTER_TOKEN}\$${br}URL: Jupyter Notebook: \$${jupyter}/tree?token=\$${JUPYTER_TOKEN}\$${br}URL: TensorBoard: \$${tensorboard}\$${br}\`);
+      fs.writeFileSync("log.md", \\\`\\\$${br}URL: Jupyter Lab: \\\$${jupyter}/lab?token=\\\$${JUPYTER_TOKEN}\\\$${br}URL: Jupyter Notebook: \\\$${jupyter}/tree?token=\\\$${JUPYTER_TOKEN}\\\$${br}URL: TensorBoard: \\\$${tensorboard}\\\$${br}\\\`);
     })();
     TUNNEL
-    ) >tunnel.js
-
-    (cat <<CMD
-    #!/bin/bash
-    set -euo pipefail
-    # start tunnel in background
-    npx ngrok authtoken "$NGROK_TOKEN"
-    node ./tunnel.js &
+    ) &
     while test ! -f log.md; do sleep 1; done
     cat log.md
     # start tensorboard in background
@@ -82,9 +78,9 @@ resource "iterative_task" "jupyter_server" {
     (cat <<DOCKERFILE
     FROM tensorflow/tensorflow:latest-gpu-jupyter
     ARG QUIET=1
-    RUN python3 -m pip install --no-cache-dir $${QUIET:+-q} jupyterlab matplotlib ipywidgets tensorboard tensorflow_datasets
-    COPY setup_16.x tunnel.js cmd.sh ./
-    RUN bash setup_16.x >> /dev/null && apt-get install -y $${QUIET:+-qq} nodejs && rm setup_16.x && npm i ngrok
+    RUN python3 -m pip install --no-cache-dir \$${QUIET:+-q} jupyterlab matplotlib ipywidgets tensorboard tensorflow_datasets
+    RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - >>/dev/null && apt-get install -y \$${QUIET:+-qq} nodejs && npm i ngrok
+    COPY cmd.sh ./
     RUN chmod +x cmd.sh
     CMD ["./cmd.sh"]
     DOCKERFILE
