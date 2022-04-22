@@ -27,6 +27,9 @@ terraform destroy # Download "shared" workdir & terminate cloud resources
 
 ## Requirements
 
+Toggle Version: [![](https://img.shields.io/badge/aws-other_clouds-grey.svg?colorA=blue)](https://github.com/iterative/blog-tpi-jupyter/tree/generic#requirements)
+<!-- `git checkout generic` for Azure, GCP & K8s -->
+
 - Download [`terraform`](https://www.terraform.io/downloads.html) (free)
 - [ngrok](https://ngrok.com) credentials (free)
 - Cloud credentials ([AWS], [Azure], [GCP], or [Kubernetes]). For example:
