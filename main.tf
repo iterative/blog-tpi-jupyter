@@ -73,14 +73,7 @@ resource "iterative_task" "jupyter_server" {
     env -u JUPYTER_TOKEN -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN tensorboard --logdir . --host 0.0.0.0 --port 6006 &
 
     # start Jupyter server in foreground
-    mkdir ~/.jupyter
-    echo '{
-      "ServerApp": {
-        "allow_root": true, "ip": "0.0.0.0", "open_browser": false,
-        "port": 8888, "port_retries": 0
-      }
-    }' > ~/.jupyter/jupyter_notebook_config.json
-    env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter lab
+    env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter lab --allow-root --ip=0.0.0.0 --no-browser --port=8888 --port-retries=0
   END
 }
 output "logs" {
