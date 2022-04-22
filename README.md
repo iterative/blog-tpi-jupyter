@@ -27,11 +27,13 @@ terraform destroy # Download "shared" workdir & terminate cloud resources
 
 ## Requirements
 
+Toggle Version: [![](https://img.shields.io/badge/aws-other_clouds-blue.svg?colorA=grey)](https://github.com/iterative/blog-tpi-jupyter/tree/aws#requirements)
+<!-- `git checkout generic` for AWS -->
+
 - Download [`terraform`](https://www.terraform.io/downloads.html) (free)
 - [ngrok](https://ngrok.com) credentials (free)
-- Cloud credentials ([AWS], [Azure], [GCP], or [Kubernetes]). For example:
-  + `AWS_ACCESS_KEY_ID`
-  + `AWS_SECRET_ACCESS_KEY`
+- Cloud credentials ([AWS], [Azure], [GCP], or [Kubernetes])
+  + Select a cloud by modifying the `cloud-specific config` section in `main.tf`
 
 [AWS]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#amazon-web-services
 [Azure]: https://registry.terraform.io/providers/iterative/iterative/latest/docs/guides/authentication#microsoft-azure
