@@ -78,7 +78,7 @@ resource "iterative_task" "jupyter_server" {
     (cat <<DOCKERFILE
     FROM tensorflow/tensorflow:latest-gpu-jupyter
     ARG QUIET=1
-    RUN python3 -m pip install --no-cache-dir \$${QUIET:+-q} jupyterlab matplotlib ipywidgets tensorboard tensorflow_datasets
+    RUN python3 -m pip install --no-cache-dir \$${QUIET:+-q} jupyterlab 'nbformat>=5.2' matplotlib ipywidgets tensorboard tensorflow_datasets
     RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - >>/dev/null && apt-get install -y \$${QUIET:+-qq} nodejs && npm i ngrok
     COPY cmd.sh ./
     RUN chmod +x cmd.sh
