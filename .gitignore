@@ -2,3 +2,4 @@
 /.terraform*
 /terraform.tfstate*
 /shared/.ipynb_checkpoints/
+/shared/tensorboard_logs/
