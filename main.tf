@@ -69,7 +69,7 @@ resource "iterative_task" "jupyter_server" {
     while test ! -f log.md; do sleep 1; done
     cat log.md
     # start tensorboard in background
-    tensorboard --logdir . --host 0.0.0.0 --port 6006 &
+    tensorboard --logdir /server --host 0.0.0.0 --port 6006 &
     # start Jupyter server in foreground
     jupyter lab --allow-root --ip=0.0.0.0 --notebook-dir=/server --no-browser --port=8888 --port-retries=0
     CMD
