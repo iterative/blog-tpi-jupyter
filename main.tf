@@ -24,7 +24,7 @@ resource "iterative_task" "jupyter_server" {
   spot      = 0             # auto-priced low-cost spot instance
   timeout   = 24*60*60      # force shutdown after 24h
   disk_size = 125           # GB
-  machine   = "m+k80"       # m or l (CPU), +k80 or +v100 (GPU)
+  machine   = "m+t4"        # m/l/xl (CPU), +k80/t4/v100 (GPU)
   image     = "nvidia"      # or "ubuntu"
 
   # cloud-specific config
