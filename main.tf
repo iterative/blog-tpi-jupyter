@@ -54,7 +54,7 @@ resource "iterative_task" "jupyter_server" {
     pushd "$(mktemp -d --suffix dependencies)"
     npm i ngrok
     npx ngrok authtoken "$NGROK_TOKEN"
-    (node <<EOF
+    (node <<TUNNEL
     const fs = require('fs');
     const ngrok = require('ngrok');
     (async function() {
@@ -63,7 +63,7 @@ resource "iterative_task" "jupyter_server" {
       const br = '\n*=*=*=*=*=*=*=*=*=*=*=*=*\n';
       fs.writeFileSync("log.md", \`\$${br}URL: Jupyter Lab: \$${jupyter}/lab?token=$${JUPYTER_TOKEN}\$${br}URL: Jupyter Notebook: \$${jupyter}/tree?token=$${JUPYTER_TOKEN}\$${br}URL: TensorBoard: \$${tensorboard}\$${br}\`);
     })();
-    EOF
+    TUNNEL
     ) &
     while test ! -f log.md; do sleep 1; done
     cat log.md
@@ -77,10 +77,10 @@ resource "iterative_task" "jupyter_server" {
     echo '{
       "ServerApp": {
         "allow_root": true, "ip": "0.0.0.0", "open_browser": false,
-        "port": 8888, "port_retries": 0, "token": "'$JUPYTER_TOKEN'"
+        "port": 8888, "port_retries": 0
       }
     }' > ~/.jupyter/jupyter_notebook_config.json
-    env -u JUPYTER_TOKEN -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter lab
+    env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter lab
   END
 }
 output "logs" {
