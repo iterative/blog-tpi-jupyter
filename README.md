@@ -8,7 +8,7 @@ To get started, clone this repo, then in the repo directory run:
 export NGROK_TOKEN="..."     # Sign up for free at https://ngrok.com
 export TF_LOG_PROVIDER=INFO  # (optional) Control verbosity
 terraform init    # Setup local dependencies
-terrafrom apply   # Create cloud resources & upload "shared" workdir
+terraform apply   # Create cloud resources & upload "shared" workdir
 terraform refresh | grep URL # Get Jupyter & TensorBoard URLs
 # ...
 # Have fun!

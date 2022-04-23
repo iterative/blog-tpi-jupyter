@@ -9,7 +9,7 @@
 #
 # Usage:
 # 1. terraform init    # Setup local dependencies
-# 2. terrafrom apply   # Create cloud resources & upload "shared" workdir
+# 2. terraform apply   # Create cloud resources & upload "shared" workdir
 # 3. terraform refresh | grep URL # Get Jupyter & TensorBoard URLs
 # 4. (optional) click "Quit" in Jupyter to shutdown the cloud machine
 # 5. terraform destroy # Download "shared" workdir & terminate cloud resources
