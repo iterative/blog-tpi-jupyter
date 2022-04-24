@@ -8,11 +8,11 @@
 #   - https://ngrok.com token (NGROK_TOKEN)
 #
 # Usage:
-# 1. terraform init    # Setup local dependencies
-# 2. terraform apply   # Create cloud resources & upload "shared" workdir
-# 3. terraform refresh | grep URL # Get Jupyter & TensorBoard URLs
+# 1. terraform init      # Setup local dependencies
+# 2. terraform apply     # Create cloud resources & upload "shared" workdir
+# 3. terraform refresh   # Get Jupyter & TensorBoard URLs
 # 4. (optional) click "Quit" in Jupyter to shutdown the cloud machine
-# 5. terraform destroy # Download "shared" workdir & terminate cloud resources
+# 5. terraform destroy   # Download "shared" workdir & terminate cloud resources
 terraform {
   required_providers { iterative = { source = "iterative/iterative" } }
 }
@@ -76,6 +76,6 @@ resource "iterative_task" "jupyter_server" {
     env -u AWS_ACCESS_KEY_ID -u AWS_SECRET_ACCESS_KEY -u REPO_TOKEN jupyter lab --allow-root --ip=0.0.0.0 --no-browser --port=8888 --port-retries=0
   END
 }
-output "logs" {
-  value = try(join("\n", iterative_task.jupyter_server.logs), "")
+output "urls" {
+  value = flatten(regexall("URL: (.+)", try(join("\n", iterative_task.jupyter_server.logs), "")))
 }
