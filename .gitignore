@@ -3,3 +3,5 @@
 /terraform.tfstate*
 /shared/.ipynb_checkpoints/
 /shared/tensorboard_logs/
+/shared/model.hdf5
+/shared/metrics.csv
