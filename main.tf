@@ -22,7 +22,7 @@ provider "iterative" {}
 # https://registry.terraform.io/providers/iterative/iterative/latest/docs/resources/task
 resource "iterative_task" "jupyter_server" {
   spot      = 0             # auto-priced low-cost spot instance
-  timeout   = 60*60*24      # force shutdown after 24h
+  timeout   = 24*60*60      # force shutdown after 24h
   disk_size = 125           # GB
   machine   = "m+t4"        # m/l/xl (CPU), +k80/t4/v100 (GPU)
   image     = "nvidia"      # or "ubuntu"
@@ -45,7 +45,7 @@ resource "iterative_task" "jupyter_server" {
     dpkg-reconfigure unattended-upgrades
     # install dependencies
     pip3 install $${QUIET:+-q} notebook matplotlib ipywidgets tensorflow==2.8.0 tensorboard tensorflow_datasets
-    (curl -fsSL https://deb.nodesource.com/setup_16.x | bash -) >> /dev/null
+    (curl -fsSL https://deb.nodesource.com/setup_16.x | bash -) >/dev/null
     apt-get install -y $${QUIET:+-qq} nodejs
 
     # start tunnel
