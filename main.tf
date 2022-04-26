@@ -24,12 +24,11 @@ resource "iterative_task" "jupyter_server" {
   spot      = 0             # auto-priced low-cost spot instance
   timeout   = 60*60*24      # force shutdown after 24h
   disk_size = 125           # GB
-  region    = "us-east"
+  machine   = "m+t4"        # m/l/xl (CPU), +k80/t4/v100 (GPU)
+  image     = "nvidia"      # or "ubuntu"
 
   # cloud-specific config
   cloud     = "aws"         # or any of: gcp, az, k8s
-  machine   = "g4dn.xlarge" # NVIDIA Tesla T4 GPU, 4 CPUs & 125 GB NVMe SSD at ~$0.15/h
-  image     = "user@898082745236:x86_64:Deep Learning AMI GPU TensorFlow 2.8.0 (Ubuntu 20.04) 20220315"
 
   # blank means extract from local env vars
   environment = { NGROK_TOKEN = "", QUIET = "1" }
