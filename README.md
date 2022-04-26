@@ -1,5 +1,7 @@
 # Terraform Provider Iterative + Jupyter + TensorBoard
 
+![](https://static.iterative.ai/img/tpi/banner-blog-jupyter.png)
+
 Painlessly deploy an ML-ready Jupyter server and sync results with your preferred cloud compute provider.
 
 To get started, clone this repo, then in the repo directory run:
