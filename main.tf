@@ -28,7 +28,7 @@ resource "iterative_task" "jupyter_server" {
   image     = "nvidia"      # or "ubuntu"
 
   # cloud-specific config
-  cloud     = "aws"         # or any of: gcp, az, k8s
+  cloud     = "aws"         # see `git checkout generic` branch for: gcp, az, k8s
 
   # blank means extract from local env vars
   environment = { NGROK_TOKEN = "", QUIET = "1" }
