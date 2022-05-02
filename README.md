@@ -1,5 +1,7 @@
 # Terraform Provider Iterative + Jupyter + TensorBoard
 
+Repository supporting blog: [short version on dev.to](https://dev.to/casperdcl/how-to-run-jupyter-in-any-cloud-with-one-command-52me) & [full version on hackernoon.com](https://hackernoon.com/using-jupytertensorboard-in-any-cloud-with-one-command)
+
 ![](https://static.iterative.ai/img/tpi/banner-blog-jupyter.png)
 
 Painlessly deploy an ML-ready Jupyter server and sync results with your preferred cloud compute provider.
