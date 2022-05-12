@@ -31,7 +31,7 @@ resource "iterative_task" "jupyter_server" {
   cloud     = "aws"         # see `git checkout generic` branch for: gcp, az, k8s
 
   # blank means extract from local env vars
-  environment = { NGROK_TOKEN = "", QUIET = "1" }
+  environment = { NGROK_TOKEN = "", TF_CPP_MIN_LOG_LEVEL = "1", QUIET = "1" }
   storage {
     workdir = "shared"
     output  = "."
